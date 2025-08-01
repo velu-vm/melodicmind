@@ -2,7 +2,7 @@ import openai
 import urllib.parse
 import os
 
-def refine_lyrics_with_llm(prompt):
+def refine_lyrics_with_llm(prompt, language):
     openai.api_key = os.getenv("OPENAI_API_KEY")
     
     try:
@@ -15,7 +15,7 @@ def refine_lyrics_with_llm(prompt):
                 },
                 {
                     "role": "user",
-                    "content": prompt
+                    "content": f"Lyrics: {prompt}\nLanguage: {language}"
                 }
             ],
             temperature=0.7,
@@ -34,3 +34,4 @@ def search_song_on_youtube(query):
     base_url = "https://www.youtube.com/results?search_query="
     encoded_query = urllib.parse.quote(query)
     return f"{base_url}{encoded_query}"
+

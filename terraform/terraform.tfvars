@@ -1,1 +1,2 @@
 region = "ap-south-1"
+openai_api_key = "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"
