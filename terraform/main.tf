@@ -2,6 +2,7 @@ provider "aws" {
   region = "ap-south-1"
 }
 
+# Get default VPC and subnets
 data "aws_vpc" "default" {
   default = true
 }
@@ -13,6 +14,7 @@ data "aws_subnets" "default" {
   }
 }
 
+# ECS Cluster
 resource "aws_ecs_cluster" "app_cluster" {
   name = "melodicmind-cluster"
   tags = {
@@ -20,6 +22,7 @@ resource "aws_ecs_cluster" "app_cluster" {
   }
 }
 
+# ECR Repository
 resource "aws_ecr_repository" "app_repo" {
   name = "melodicmind"
   tags = {
@@ -27,6 +30,7 @@ resource "aws_ecr_repository" "app_repo" {
   }
 }
 
+# IAM Role for ECS Task Execution
 resource "aws_iam_role" "ecs_task_exec_role" {
   name = "ecsTaskExecutionRole"
 
@@ -46,6 +50,8 @@ resource "aws_iam_role_policy_attachment" "ecs_task_policy" {
   role       = aws_iam_role.ecs_task_exec_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+
+# ECS Fargate Service
 resource "aws_ecs_service" "app_service" {
   name            = "melodicmind-service"
   cluster         = aws_ecs_cluster.app_cluster.id
@@ -54,8 +60,8 @@ resource "aws_ecs_service" "app_service" {
   desired_count   = 1
 
   network_configuration {
-    subnets         = data.aws_subnets.default.ids
-    security_groups = [aws_security_group.app_sg.id]
+    subnets          = data.aws_subnets.default.ids
+    security_groups  = [aws_security_group.app_sg.id]
     assign_public_ip = true
   }
 
